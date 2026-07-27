@@ -25,14 +25,46 @@ export default async function JoinPage({
 
 async function renderBody(code: string | undefined) {
   if (!code) {
-    return <Notice title="You need an invite">
-      Swarm Collective is invite-only. Ask a member to send you an invite link,
-      then open it to join. Already in?{" "}
-      <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
-        Sign in
-      </Link>
-      .
-    </Notice>;
+    return (
+      <>
+        <h1 className="text-2xl font-semibold tracking-tight text-white">
+          Join Swarm Collective
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-white/50">
+          The swarm is invite-only. If a member sent you an invite link, open it
+          to join — or paste your invite code below.
+        </p>
+
+        <form method="get" action="/join" className="mt-6 flex items-center gap-2">
+          <input
+            name="code"
+            required
+            placeholder="Paste invite code"
+            className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-indigo-400/60 focus:bg-white/[0.05]"
+          />
+          <button
+            type="submit"
+            className="shrink-0 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-white/90"
+          >
+            Continue
+          </button>
+        </form>
+
+        <p className="mt-6 text-sm text-white/40">
+          Already a member?{" "}
+          <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
+            Sign in
+          </Link>
+          .
+        </p>
+        <Link
+          href="/"
+          className="mt-4 inline-block text-sm text-white/40 transition hover:text-white/70"
+        >
+          ← Back home
+        </Link>
+      </>
+    );
   }
 
   const invite = await getInviteByCode(code);

@@ -34,21 +34,28 @@ export default async function Home() {
           ) : (
             <>
               <Link
+                href="/join"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-black transition hover:bg-white/90"
+              >
+                Join the network
+              </Link>
+              <Link
                 href="/enter"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-black transition hover:bg-white/90"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-semibold text-white/80 transition hover:border-white/30 hover:text-white"
               >
                 Sign in
               </Link>
-              <span className="text-sm text-white/40">
-                Got an invite link? Just open it to join.
-              </span>
             </>
           )}
         </div>
 
         {member ? (
           <p className="mt-8 text-sm text-white/40">Signed in as {member.name}.</p>
-        ) : null}
+        ) : (
+          <p className="mt-5 text-sm text-white/35">
+            Joining is invite-only — you&apos;ll need a link from a member.
+          </p>
+        )}
 
         <div className="mx-auto mt-20 grid max-w-lg grid-cols-1 gap-6 text-left sm:grid-cols-3">
           <Step n="01" title="Get invited">
