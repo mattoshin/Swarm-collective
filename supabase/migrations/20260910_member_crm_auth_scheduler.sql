@@ -20,6 +20,17 @@ alter table public.swarm_members add column if not exists role text not null def
 alter table public.swarm_members add column if not exists email_verified_at timestamptz;
 alter table public.swarm_members add column if not exists bookmark_prompt_seen boolean not null default false;
 alter table public.swarm_members add column if not exists updated_at timestamptz not null default now();
+create unique index if not exists swarm_members_email_lower_idx on public.swarm_members(lower(email));
+
+create table if not exists public.swarm_invites (
+  id uuid primary key default gen_random_uuid(), code text not null unique,
+  inviter_id uuid not null references public.swarm_members(id) on delete cascade,
+  invited_email text, accepted_by uuid references public.swarm_members(id) on delete set null,
+  created_at timestamptz not null default now(), accepted_at timestamptz
+);
+create index if not exists swarm_invites_inviter_idx on public.swarm_invites(inviter_id);
+alter table public.swarm_invites enable row level security;
+revoke all on public.swarm_invites from anon, authenticated;
 
 create table if not exists public.swarm_login_tokens (
   id uuid primary key default gen_random_uuid(), member_id uuid not null references public.swarm_members(id) on delete cascade,

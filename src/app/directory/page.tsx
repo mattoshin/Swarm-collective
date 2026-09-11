@@ -77,8 +77,6 @@ export default async function DirectoryPage() {
                         </span>
                       ) : null}
                     </Td>
-                    <Td>{row.phone ? <a href={`tel:${row.phone}`} className="text-amber-200">{row.phone}</a> : "—"}</Td>
-                    <Td>{row.location ?? "—"}</Td>
                     <Td>{row.career_title ?? "—"}</Td>
                     <Td>{row.interests ?? "—"}</Td>
                     <Td>
@@ -89,6 +87,8 @@ export default async function DirectoryPage() {
                         {row.email}
                       </a>
                     </Td>
+                    <Td>{row.phone ? <a href={`tel:${row.phone}`} className="text-amber-200">{row.phone}</a> : "—"}</Td>
+                    <Td>{row.location ?? "—"}</Td>
                     <Td>{row.invited_by_name ?? "—"}</Td>
                   </tr>
                 );
