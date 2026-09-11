@@ -25,9 +25,10 @@ export async function submitJoin(
   const bio = String(formData.get("bio") ?? "");
   const linkedinUrl = String(formData.get("linkedin_url") ?? "");
   const websiteUrl = String(formData.get("website_url") ?? "");
+  const instagramUrl = String(formData.get("instagram_url") ?? "");
   const publicNotes = String(formData.get("public_notes") ?? "");
 
-  const result = await acceptInvite({ code, name, email, interests, careerTitle, phone, company, college, location, bio, linkedinUrl, websiteUrl, publicNotes });
+  const result = await acceptInvite({ code, name, email, interests, careerTitle, phone, company, college, location, bio, linkedinUrl, websiteUrl, instagramUrl, publicNotes });
   if (!result.ok || !result.memberId) {
     return { error: result.error ?? "Something went wrong. Please try again." };
   }

@@ -1,6 +1,7 @@
 import "server-only";
 import crypto from "node:crypto";
 import { getServiceClient } from "./supabase";
+import { normalizeHttpUrl, normalizeInstagram } from "./links";
 
 export interface Member {
   id: string;
@@ -16,6 +17,7 @@ export interface Member {
   bio: string | null;
   linkedin_url: string | null;
   website_url: string | null;
+  instagram_url: string | null;
   public_notes: string | null;
   admin_notes: string | null;
   role: "member" | "admin";
@@ -147,6 +149,7 @@ export async function acceptInvite(params: {
   bio?: string | null;
   linkedinUrl?: string | null;
   websiteUrl?: string | null;
+  instagramUrl?: string | null;
   publicNotes?: string | null;
 }): Promise<AcceptResult> {
   const supabase = getServiceClient();
@@ -155,6 +158,19 @@ export async function acceptInvite(params: {
 
   if (!name) return { ok: false, error: "Please enter your name." };
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Please enter a valid email." };
+
+  const links = {
+    linkedin_url: normalizeHttpUrl(params.linkedinUrl),
+    website_url: normalizeHttpUrl(params.websiteUrl),
+    instagram_url: normalizeInstagram(params.instagramUrl),
+  };
+  const badLink =
+    (params.linkedinUrl?.trim() && !links.linkedin_url) ||
+    (params.websiteUrl?.trim() && !links.website_url) ||
+    (params.instagramUrl?.trim() && !links.instagram_url);
+  if (badLink) {
+    return { ok: false, error: "One of your links doesn't look right. Use a full link, or an @handle for Instagram." };
+  }
 
   const shared = process.env.SWARM_INVITE_TOKEN;
   const sharedValid = Boolean(shared && params.code.length === shared.length && crypto.timingSafeEqual(Buffer.from(params.code), Buffer.from(shared)));
@@ -182,8 +198,7 @@ export async function acceptInvite(params: {
       college: params.college?.trim() || null,
       location: params.location?.trim() || null,
       bio: params.bio?.trim() || null,
-      linkedin_url: params.linkedinUrl?.trim() || null,
-      website_url: params.websiteUrl?.trim() || null,
+      ...links,
       public_notes: params.publicNotes?.trim() || null,
       role: (process.env.SWARM_ADMIN_EMAILS || "").split(",").map(v=>v.trim().toLowerCase()).includes(email) ? "admin" : "member",
     })

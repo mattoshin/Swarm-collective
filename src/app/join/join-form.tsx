@@ -33,6 +33,7 @@ export function JoinForm({ code }: { code: string }) {
         <Field id="college" label="College" placeholder="University" />
         <Field id="linkedin_url" label="LinkedIn" placeholder="https://linkedin.com/in/..." type="url" />
         <Field id="website_url" label="Website" placeholder="https://..." type="url" />
+        <Field id="instagram_url" label="Instagram" placeholder="@handle" />
       </div>
 
       <TextArea id="bio" label="Short bio" placeholder="What are you building, learning, or looking for?" />
