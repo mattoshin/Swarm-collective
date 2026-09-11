@@ -31,7 +31,7 @@ export function InvitePanel({ invites }: { invites: Invite[] }) {
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-indigo-500 px-5 text-sm font-semibold text-white transition hover:bg-indigo-400 disabled:opacity-60"
+            className="inline-flex h-10 items-center justify-center rounded-full bg-amber-300 px-5 text-sm font-semibold text-black transition hover:bg-amber-200 disabled:opacity-60"
           >
             {pending ? "Creating…" : "Create invite link"}
           </button>
@@ -77,8 +77,8 @@ function FreshInvite({ code }: { code: string }) {
   }
 
   return (
-    <div className="mt-4 rounded-lg border border-indigo-400/30 bg-indigo-500/10 p-3">
-      <div className="text-xs font-medium text-indigo-200/80">
+    <div className="mt-4 rounded-lg border border-amber-300/30 bg-amber-300/10 p-3">
+      <div className="text-xs font-medium text-amber-200/80">
         New invite link — share it once
       </div>
       <div className="mt-2 flex items-center gap-2">
