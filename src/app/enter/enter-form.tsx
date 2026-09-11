@@ -39,7 +39,7 @@ export function EnterForm() {
       >
           {pending ? "Sending…" : "Email me a sign-in link"}
       </button>
-      {state.success ? <p className="rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-200">{state.success}</p> : null}
+      {state.success ? <p className="rounded-lg border-2 border-black bg-[#fff3a3] px-3.5 py-2.5 text-sm font-bold text-black">{state.success}</p> : null}
     </form>
   );
 }

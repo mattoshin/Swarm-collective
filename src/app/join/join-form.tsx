@@ -13,7 +13,7 @@ export function JoinForm({ code }: { code: string }) {
     {},
   );
 
-  if (state.success) return <div className="mt-8 rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-5 text-sm leading-relaxed text-emerald-100">{state.success}</div>;
+  if (state.success) return <div className="mt-8 rounded-xl border-2 border-black bg-[#fff3a3] p-5 text-sm font-bold leading-relaxed text-black">{state.success}</div>;
 
   return (
     <form action={action} className="mt-8 space-y-4 text-left">
