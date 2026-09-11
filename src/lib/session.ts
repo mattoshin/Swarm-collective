@@ -56,5 +56,6 @@ export async function getCurrentMember(): Promise<Member | null> {
   if (!token) return null;
   const memberId = verify(token);
   if (!memberId) return null;
-  return getMemberById(memberId);
+  const member = await getMemberById(memberId);
+  return member?.email_verified_at ? member : null;
 }

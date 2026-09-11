@@ -14,6 +14,8 @@ export async function createInviteAction(
   _prev: CreateInviteState,
   _formData: FormData,
 ): Promise<CreateInviteState> {
+  void _prev;
+  void _formData;
   const member = await getCurrentMember();
   if (!member) return { error: "Your session expired. Sign in again." };
 

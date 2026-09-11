@@ -14,7 +14,7 @@ export default async function EnterPage() {
           Welcome back
         </h1>
         <p className="mt-2 text-sm text-white/50">
-          Enter the email you joined with to reach the directory.
+          No password. We’ll email you a secure, one-time link.
         </p>
         <EnterForm />
         <p className="mt-6 text-sm text-white/40">
