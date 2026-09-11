@@ -33,6 +33,8 @@ export interface Invite {
   accepted_by: string | null;
   created_at: string;
   accepted_at: string | null;
+  expires_at: string;
+  redemption_count: number;
 }
 
 export interface DirectoryRow extends Member {
@@ -129,10 +131,9 @@ export interface AcceptResult {
 }
 
 /**
- * Redeem an invite and create the new member in one flow. Not a DB transaction
- * (service client can't open one), so the invite claim is guarded with a
- * conditional update and the member insert is rolled back if the claim loses a
- * race. Volume is low; the unique email index is the real backstop.
+ * Redeem an invite and create the new member in one flow. Invites are
+ * multi-use until they expire, so there's no claim race to guard against;
+ * the unique email index is what stops the same person joining twice.
  */
 export async function acceptInvite(params: {
   code: string;
@@ -160,7 +161,9 @@ export async function acceptInvite(params: {
   const sharedValid = Boolean(shared && params.code.length === shared.length && crypto.timingSafeEqual(Buffer.from(params.code), Buffer.from(shared)));
   const invite = sharedValid ? null : await getInviteByCode(params.code);
   if (!sharedValid && !invite) return { ok: false, error: "This invite link isn't valid." };
-  if (invite?.accepted_by) return { ok: false, error: "This invite has already been used." };
+  if (invite && new Date(invite.expires_at) < new Date()) {
+    return { ok: false, error: "This invite link has expired." };
+  }
 
   const existing = await getMemberByEmail(email);
   if (existing) {
@@ -195,16 +198,14 @@ export async function acceptInvite(params: {
   const memberId = (member as { id: string }).id;
 
   if (!invite) return { ok: true, memberId };
-  const { data: claimed, error: claimError } = await supabase
+  await supabase
     .from("swarm_invites")
-    .update({ accepted_by: memberId, accepted_at: new Date().toISOString() })
-    .eq("id", invite.id)
-    .is("accepted_by", null)
-    .select("id");
-  if (claimError || !claimed || claimed.length === 0) {
-    await supabase.from("swarm_members").delete().eq("id", memberId);
-    return { ok: false, error: "This invite was just used by someone else." };
-  }
+    .update({
+      accepted_by: memberId,
+      accepted_at: new Date().toISOString(),
+      redemption_count: invite.redemption_count + 1,
+    })
+    .eq("id", invite.id);
 
   return { ok: true, memberId };
 }

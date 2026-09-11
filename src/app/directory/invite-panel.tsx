@@ -15,7 +15,7 @@ export function InvitePanel({ invites }: { invites: Invite[] }) {
     {},
   );
 
-  const pendingCount = invites.filter((i) => !i.accepted_by).length;
+  const activeCount = invites.filter((i) => new Date(i.expires_at) > new Date()).length;
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
@@ -23,8 +23,9 @@ export function InvitePanel({ invites }: { invites: Invite[] }) {
         <div>
           <h2 className="text-sm font-semibold text-white">Bring someone in</h2>
           <p className="mt-1 text-sm text-white/50">
-            Generate a one-time link and share it. When they join, they land in
-            the directory under you.
+            Generate a link and share it however you like. It works for 6
+            months and everyone who joins through it lands in the directory
+            under you.
           </p>
         </div>
         <form action={action}>
@@ -49,7 +50,7 @@ export function InvitePanel({ invites }: { invites: Invite[] }) {
       {invites.length > 0 ? (
         <div className="mt-6">
           <div className="mb-2 text-xs font-medium uppercase tracking-wider text-white/40">
-            Your invites · {pendingCount} unused
+            Your invites · {activeCount} active
           </div>
           <ul className="divide-y divide-white/5 rounded-lg border border-white/10">
             {invites.map((invite) => (
@@ -79,7 +80,7 @@ function FreshInvite({ code }: { code: string }) {
   return (
     <div className="mt-4 rounded-lg border border-amber-300/30 bg-amber-300/10 p-3">
       <div className="text-xs font-medium text-amber-200/80">
-        New invite link — share it once
+        New invite link — good for 6 months, anyone can use it
       </div>
       <div className="mt-2 flex items-center gap-2">
         <input
@@ -101,18 +102,29 @@ function FreshInvite({ code }: { code: string }) {
 
 function InviteRow({ invite }: { invite: Invite }) {
   const url = inviteUrl(invite.code);
+  const expired = new Date(invite.expires_at) < new Date();
+  const joinedLabel =
+    invite.redemption_count === 0
+      ? "No one yet"
+      : `${invite.redemption_count} joined`;
+
   return (
     <li className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm">
       <span className="truncate font-mono text-xs text-white/50">{url}</span>
-      {invite.accepted_by ? (
-        <span className="shrink-0 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
-          Joined
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-white/60">
+          {joinedLabel}
         </span>
-      ) : (
-        <span className="shrink-0 rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-white/60">
-          Unused
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            expired
+              ? "bg-red-500/15 text-red-300"
+              : "bg-emerald-500/15 text-emerald-300"
+          }`}
+        >
+          {expired ? "Expired" : "Active"}
         </span>
-      )}
+      </div>
     </li>
   );
 }
