@@ -1,3 +1,13 @@
+---
+type: project
+title: Swarm Collective Handoff
+captured_at: '2026-09-11T03:26:43.029Z'
+captured_via: gstack-code-0941f48d-22ceef
+ingested_via: put_page
+ingested_at: '2026-09-11T03:26:46.371Z'
+source_kind: put_page
+---
+
 # Swarm Collective Handoff
 
 Updated: September 10, 2026
@@ -105,4 +115,3 @@ Run secret-dependent Vercel commands through the 1Password wrapper:
 ## Next product step
 
 Improve the meeting scheduler so an administrator can choose recipients, send polished invitation and reminder emails, and see RSVP totals. Preserve the existing rule that ordinary members can RSVP but cannot broadcast email to the membership.
-
