@@ -8,6 +8,19 @@ export interface Member {
   email: string;
   interests: string | null;
   career_title: string | null;
+  phone: string | null;
+  company: string | null;
+  role_title: string | null;
+  college: string | null;
+  location: string | null;
+  bio: string | null;
+  linkedin_url: string | null;
+  website_url: string | null;
+  public_notes: string | null;
+  admin_notes: string | null;
+  role: "member" | "admin";
+  email_verified_at: string | null;
+  bookmark_prompt_seen: boolean;
   invited_by: string | null;
   created_at: string;
 }
@@ -127,6 +140,14 @@ export async function acceptInvite(params: {
   email: string;
   interests?: string | null;
   careerTitle?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  college?: string | null;
+  location?: string | null;
+  bio?: string | null;
+  linkedinUrl?: string | null;
+  websiteUrl?: string | null;
+  publicNotes?: string | null;
 }): Promise<AcceptResult> {
   const supabase = getServiceClient();
   const name = params.name.trim();
@@ -135,9 +156,11 @@ export async function acceptInvite(params: {
   if (!name) return { ok: false, error: "Please enter your name." };
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Please enter a valid email." };
 
-  const invite = await getInviteByCode(params.code);
-  if (!invite) return { ok: false, error: "This invite link isn't valid." };
-  if (invite.accepted_by) return { ok: false, error: "This invite has already been used." };
+  const shared = process.env.SWARM_INVITE_TOKEN;
+  const sharedValid = Boolean(shared && params.code.length === shared.length && crypto.timingSafeEqual(Buffer.from(params.code), Buffer.from(shared)));
+  const invite = sharedValid ? null : await getInviteByCode(params.code);
+  if (!sharedValid && !invite) return { ok: false, error: "This invite link isn't valid." };
+  if (invite?.accepted_by) return { ok: false, error: "This invite has already been used." };
 
   const existing = await getMemberByEmail(email);
   if (existing) {
@@ -148,10 +171,21 @@ export async function acceptInvite(params: {
     .from("swarm_members")
     .insert({
       name,
+      full_name: name,
       email,
       interests: params.interests?.trim() || null,
       career_title: params.careerTitle?.trim() || null,
-      invited_by: invite.inviter_id,
+      invited_by: invite?.inviter_id ?? null,
+      phone: params.phone?.trim() || null,
+      company: params.company?.trim() || null,
+      role_title: params.careerTitle?.trim() || null,
+      college: params.college?.trim() || null,
+      location: params.location?.trim() || null,
+      bio: params.bio?.trim() || null,
+      linkedin_url: params.linkedinUrl?.trim() || null,
+      website_url: params.websiteUrl?.trim() || null,
+      public_notes: params.publicNotes?.trim() || null,
+      role: (process.env.SWARM_ADMIN_EMAILS || "").split(",").map(v=>v.trim().toLowerCase()).includes(email) ? "admin" : "member",
     })
     .select("id")
     .single();
@@ -160,6 +194,7 @@ export async function acceptInvite(params: {
   }
   const memberId = (member as { id: string }).id;
 
+  if (!invite) return { ok: true, memberId };
   const { data: claimed, error: claimError } = await supabase
     .from("swarm_invites")
     .update({ accepted_by: memberId, accepted_at: new Date().toISOString() })

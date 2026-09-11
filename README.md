@@ -37,8 +37,9 @@ publishable key can't read or write them. All access goes through the
 server-side service-role client (`src/lib/supabase.ts`) and is gated in
 application code — the directory of real emails is never exposed to the browser.
 
-> Sign-in is currently email-only (no verification code). That's fine for an
-> MVP invite network; upgrade to emailed one-time codes before wider launch.
+Sign-in uses emailed, single-use magic links that expire after 15 minutes. A
+signed session lasts 30 days. Member records, contact details, meetings, and
+private CRM notes are inaccessible through the browser-facing Supabase API.
 
 ## Setup
 

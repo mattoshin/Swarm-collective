@@ -1,11 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { getMemberByEmail } from "@/lib/members";
-import { setSession } from "@/lib/session";
+import { emailMagicLink } from "@/lib/magic-link";
 
 export interface EnterState {
   error?: string;
+  success?: string;
 }
 
 export async function submitEnter(
@@ -22,6 +22,6 @@ export async function submitEnter(
     };
   }
 
-  await setSession(member.id);
-  redirect("/directory");
+  try { await emailMagicLink(member); } catch { return { error: "We couldn't send the sign-in email. Try again shortly." }; }
+  return { success: "Check your email. Your one-time sign-in link expires in 15 minutes." };
 }

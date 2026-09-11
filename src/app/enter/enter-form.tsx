@@ -37,8 +37,9 @@ export function EnterForm() {
         disabled={pending}
         className="inline-flex h-11 w-full items-center justify-center rounded-full bg-white text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
       >
-        {pending ? "Signing in…" : "Sign in"}
+          {pending ? "Sending…" : "Email me a sign-in link"}
       </button>
+      {state.success ? <p className="rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-200">{state.success}</p> : null}
     </form>
   );
 }

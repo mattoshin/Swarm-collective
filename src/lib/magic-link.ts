@@ -1,0 +1,8 @@
+import "server-only";
+import crypto from "node:crypto";
+import { getServiceClient } from "./supabase";
+import { sendEmail } from "./email";
+import type { Member } from "./members";
+const site=()=>process.env.NEXT_PUBLIC_SITE_URL||"http://localhost:3000";
+export async function emailMagicLink(member:Member){const raw=crypto.randomBytes(32).toString("base64url");const hash=crypto.createHash("sha256").update(raw).digest("hex");const db=getServiceClient();await db.from("swarm_login_tokens").delete().eq("member_id",member.id).is("used_at",null);const {error}=await db.from("swarm_login_tokens").insert({member_id:member.id,token_hash:hash,expires_at:new Date(Date.now()+15*60_000).toISOString()});if(error)throw error;await sendEmail({to:member.email,subject:"Your private Swarm sign-in link",html:`<p>Hi ${member.name.split(" ")[0]},</p><p><a href="${site()}/auth/verify?token=${raw}">Enter Swarm Collective</a></p><p>This link works once and expires in 15 minutes.</p>`})}
+export async function redeemMagicLink(raw:string){const hash=crypto.createHash("sha256").update(raw).digest("hex");const db=getServiceClient();const {data}=await db.from("swarm_login_tokens").select("*").eq("token_hash",hash).is("used_at",null).gt("expires_at",new Date().toISOString()).maybeSingle();if(!data)return null;const {data:used}=await db.from("swarm_login_tokens").update({used_at:new Date().toISOString()}).eq("id",data.id).is("used_at",null).select("member_id").maybeSingle();if(!used)return null;await db.from("swarm_members").update({email_verified_at:new Date().toISOString()}).eq("id",used.member_id);return used.member_id as string}

@@ -3,6 +3,7 @@ import { listDirectory, listInvitesFor } from "@/lib/members";
 import { getCurrentMember } from "@/lib/session";
 import { signOutAction } from "./actions";
 import { InvitePanel } from "./invite-panel";
+import Link from "next/link";
 
 export default async function DirectoryPage() {
   const member = await getCurrentMember();
@@ -29,6 +30,8 @@ export default async function DirectoryPage() {
           </p>
         </div>
         <form action={signOutAction}>
+          <Link href="/meetings" className="mr-3 h-9 rounded-full border border-amber-300/30 px-4 py-2 text-sm text-amber-200">Meetings</Link>
+          {member.role === "admin" ? <Link href="/admin" className="mr-3 h-9 rounded-full border border-white/15 px-4 py-2 text-sm text-white/70">CRM</Link> : null}
           <button
             type="submit"
             className="h-9 rounded-full border border-white/15 px-4 text-sm text-white/70 transition hover:border-white/30 hover:text-white"
@@ -51,6 +54,8 @@ export default async function DirectoryPage() {
                 <Th>Career title</Th>
                 <Th>Interests</Th>
                 <Th>Email</Th>
+                <Th>Phone</Th>
+                <Th>Location</Th>
                 <Th>Invited by</Th>
               </tr>
             </thead>
@@ -72,6 +77,8 @@ export default async function DirectoryPage() {
                         </span>
                       ) : null}
                     </Td>
+                    <Td>{row.phone ? <a href={`tel:${row.phone}`} className="text-amber-200">{row.phone}</a> : "—"}</Td>
+                    <Td>{row.location ?? "—"}</Td>
                     <Td>{row.career_title ?? "—"}</Td>
                     <Td>{row.interests ?? "—"}</Td>
                     <Td>

@@ -67,13 +67,15 @@ async function renderBody(code: string | undefined) {
     );
   }
 
-  const invite = await getInviteByCode(code);
-  if (!invite) {
+  const shared = process.env.SWARM_INVITE_TOKEN;
+  const isShared = Boolean(shared && code === shared);
+  const invite = isShared ? null : await getInviteByCode(code);
+  if (!isShared && !invite) {
     return <Notice title="Invite not found">
       This invite link isn&apos;t valid. Double-check it with whoever sent it.
     </Notice>;
   }
-  if (invite.accepted_by) {
+  if (invite?.accepted_by) {
     return <Notice title="Invite already used">
       This invite has already been redeemed. If that was you,{" "}
       <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
@@ -83,7 +85,7 @@ async function renderBody(code: string | undefined) {
     </Notice>;
   }
 
-  const inviter = await getMemberById(invite.inviter_id);
+  const inviter = invite ? await getMemberById(invite.inviter_id) : null;
 
   return (
     <>

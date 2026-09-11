@@ -1,11 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { acceptInvite } from "@/lib/members";
-import { setSession } from "@/lib/session";
+import { getMemberById } from "@/lib/members";
+import { emailMagicLink } from "@/lib/magic-link";
 
 export interface JoinState {
   error?: string;
+  success?: string;
 }
 
 export async function submitJoin(
@@ -17,12 +18,22 @@ export async function submitJoin(
   const email = String(formData.get("email") ?? "");
   const interests = String(formData.get("interests") ?? "");
   const careerTitle = String(formData.get("career_title") ?? "");
+  const phone = String(formData.get("phone") ?? "");
+  const company = String(formData.get("company") ?? "");
+  const college = String(formData.get("college") ?? "");
+  const location = String(formData.get("location") ?? "");
+  const bio = String(formData.get("bio") ?? "");
+  const linkedinUrl = String(formData.get("linkedin_url") ?? "");
+  const websiteUrl = String(formData.get("website_url") ?? "");
+  const publicNotes = String(formData.get("public_notes") ?? "");
 
-  const result = await acceptInvite({ code, name, email, interests, careerTitle });
+  const result = await acceptInvite({ code, name, email, interests, careerTitle, phone, company, college, location, bio, linkedinUrl, websiteUrl, publicNotes });
   if (!result.ok || !result.memberId) {
     return { error: result.error ?? "Something went wrong. Please try again." };
   }
 
-  await setSession(result.memberId);
-  redirect("/directory");
+  const member = await getMemberById(result.memberId);
+  if (!member) return { error: "Your profile was saved, but sign-in could not start." };
+  try { await emailMagicLink(member); } catch { return { error: "Your profile was saved, but the email could not be sent. Try signing in." }; }
+  return { success: "Check your email for a private sign-in link. It expires in 15 minutes." };
 }

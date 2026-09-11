@@ -13,6 +13,8 @@ export function JoinForm({ code }: { code: string }) {
     {},
   );
 
+  if (state.success) return <div className="mt-8 rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-5 text-sm leading-relaxed text-emerald-100">{state.success}</div>;
+
   return (
     <form action={action} className="mt-8 space-y-4 text-left">
       <input type="hidden" name="code" value={code} />
@@ -23,6 +25,18 @@ export function JoinForm({ code }: { code: string }) {
         </label>
         <input id="name" name="name" required className={fieldClass} placeholder="Jane Rivera" />
       </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field id="phone" label="Phone" placeholder="(212) 555-0123" type="tel" />
+        <Field id="location" label="Location" placeholder="New York, NY" />
+        <Field id="company" label="Company" placeholder="Company or project" />
+        <Field id="college" label="College" placeholder="University" />
+        <Field id="linkedin_url" label="LinkedIn" placeholder="https://linkedin.com/in/..." type="url" />
+        <Field id="website_url" label="Website" placeholder="https://..." type="url" />
+      </div>
+
+      <TextArea id="bio" label="Short bio" placeholder="What are you building, learning, or looking for?" />
+      <TextArea id="public_notes" label="Anything else to share" placeholder="What should another member ask you about?" />
 
       <div>
         <label className={labelClass} htmlFor="email">
@@ -78,3 +92,6 @@ export function JoinForm({ code }: { code: string }) {
     </form>
   );
 }
+
+function Field({id,label,placeholder,type="text"}:{id:string;label:string;placeholder:string;type?:string}){return <div><label className={labelClass} htmlFor={id}>{label}</label><input id={id} name={id} type={type} className={fieldClass} placeholder={placeholder}/></div>}
+function TextArea({id,label,placeholder}:{id:string;label:string;placeholder:string}){return <div><label className={labelClass} htmlFor={id}>{label}</label><textarea id={id} name={id} rows={3} className={fieldClass} placeholder={placeholder}/></div>}
