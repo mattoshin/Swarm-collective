@@ -10,6 +10,7 @@ const APPS = [
   { href: "/charter", label: "The Charter" },
   { href: "/tools", label: "Tools" },
   { href: "/collaborate", label: "Collaborate" },
+  { href: "/news", label: "News" },
 ];
 
 export function NavTabs() {
