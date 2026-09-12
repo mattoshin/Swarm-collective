@@ -6,9 +6,10 @@ import { useEffect, useRef } from "react";
 const GLYPHS =
   "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789<>/=+*";
 
-// Rain stays full strength at the edges and dims toward the center, where content sits.
+// Rain stays full strength at the edges and only lightly dims where content sits,
+// so it reads as a strong presence rather than a faint backdrop.
 const MASK =
-  "radial-gradient(ellipse 80% 70% at 50% 40%, rgb(0 0 0 / 0.35) 0%, rgb(0 0 0 / 0.6) 50%, black 100%)";
+  "radial-gradient(ellipse 80% 70% at 50% 40%, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.3) 50%, rgb(0 0 0 / 0.55) 100%)";
 
 type MatrixRainProps = {
   color?: string;
@@ -23,7 +24,7 @@ export function MatrixRain({
   fadeColor = "#030703",
   fontSize = 16,
   fps = 22,
-  opacity = 0.5,
+  opacity = 0.85,
 }: MatrixRainProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -57,22 +58,27 @@ export function MatrixRain({
 
     const drawFrame = () => {
       // Translucent wash each frame turns old glyphs into fading trails.
-      ctx.fillStyle = `rgba(${fade.r},${fade.g},${fade.b},0.14)`;
+      // A lighter wash (vs. the original 0.14) leaves more of the trail
+      // visible per frame, for a denser, more prominent rain.
+      ctx.fillStyle = `rgba(${fade.r},${fade.g},${fade.b},0.1)`;
       ctx.fillRect(0, 0, width, height);
       ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textBaseline = "top";
+      ctx.shadowColor = color;
 
       for (let i = 0; i < drops.length; i++) {
         const y = drops[i] * fontSize;
         if (y > -fontSize) {
           const char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-          const alpha =
-            Math.random() > 0.97 ? opacity * 1.6 : opacity * (0.4 + Math.random() * 0.6);
+          const isHead = Math.random() > 0.9;
+          const alpha = isHead ? opacity * 1.8 : opacity * (0.5 + Math.random() * 0.5);
+          ctx.shadowBlur = isHead ? 6 : 0;
           ctx.fillStyle = `rgba(${glyph.r},${glyph.g},${glyph.b},${Math.min(alpha, 1)})`;
           ctx.fillText(char, i * fontSize, y);
         }
         drops[i] = y > height && Math.random() > 0.975 ? 0 : drops[i] + speeds[i];
       }
+      ctx.shadowBlur = 0;
     };
 
     const renderStatic = () => {

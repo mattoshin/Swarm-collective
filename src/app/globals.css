@@ -249,8 +249,8 @@
   inset: 0;
   z-index: 40;
   background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.18) 2px 3px),
-    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.55) 100%);
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.12) 2px 3px),
+    radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 0.35) 100%);
 }
 
 @keyframes term-blink {
