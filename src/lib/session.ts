@@ -4,7 +4,9 @@ import { cookies } from "next/headers";
 import { getMemberById, type Member } from "./members";
 
 const COOKIE_NAME = "swarm_session";
-const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+// 400 days: the longest expiry Chrome will honor on a Set-Cookie header.
+// Effectively "remember this device forever" for a low-stakes community site.
+const MAX_AGE = 60 * 60 * 24 * 400;
 
 function secret(): string {
   const value = process.env.SWARM_SESSION_SECRET;
