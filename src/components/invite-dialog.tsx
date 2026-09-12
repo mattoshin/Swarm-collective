@@ -79,15 +79,15 @@ export function InviteDialog({ invites }: { invites: Invite[] }) {
 
 function FreshInvite({ code }: { code: string }) {
   const url = inviteUrl(code);
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 1500);
     } catch {
-      setCopied(false);
+      setCopyState("failed");
     }
   }
 
@@ -105,9 +105,14 @@ function FreshInvite({ code }: { code: string }) {
           className="term-input truncate text-xs"
         />
         <button type="button" onClick={copy} className="term-btn h-10 shrink-0 px-3">
-          {copied ? "Copied" : "Copy"}
+          {copyState === "copied" ? "Copied" : "Copy"}
         </button>
       </div>
+      {copyState === "failed" ? (
+        <p role="alert" className="mt-2 text-xs text-term-red">
+          Couldn&apos;t copy automatically. Select the link above and copy it manually.
+        </p>
+      ) : null}
     </div>
   );
 }

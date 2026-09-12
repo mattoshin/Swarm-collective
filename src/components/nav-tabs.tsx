@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const MEMBER_APPS = [
   { href: "/directory", label: "Directory" },
   { href: "/meetings", label: "Meetings" },
+  { href: "/charter", label: "The Charter" },
 ];
 
 const ADMIN_APPS = [...MEMBER_APPS, { href: "/admin", label: "CRM" }];
@@ -28,7 +29,7 @@ export function NavTabs({ isAdmin }: { isAdmin: boolean }) {
             href={app.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex shrink-0 items-center gap-2 border px-3 py-1.5 text-xs uppercase tracking-[.1em] transition-colors",
+              "flex shrink-0 items-center gap-2 border px-3 py-1.5 text-xs uppercase tracking-[.1em] transition-colors motion-reduce:transition-none",
               active
                 ? "border-term-green bg-term-green text-term-ink"
                 : "border-transparent text-term-muted hover:border-term-line hover:text-term-green",
