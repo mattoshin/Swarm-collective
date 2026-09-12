@@ -149,7 +149,7 @@
     padding: 0.625rem 0.75rem;
     font-size: 0.875rem;
     color: var(--term-text);
-    background: rgb(0 0 0 / 0.55);
+    background: var(--term-panel-2);
     border: 1px solid var(--term-line);
     caret-color: var(--term-green);
     outline: none;
