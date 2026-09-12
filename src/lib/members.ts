@@ -98,17 +98,6 @@ export async function getInviteByCode(code: string): Promise<Invite | null> {
   return (data as Invite | null) ?? null;
 }
 
-export async function listInvitesFor(inviterId: string): Promise<Invite[]> {
-  const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .from("swarm_invites")
-    .select("*")
-    .eq("inviter_id", inviterId)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data as Invite[] | null) ?? [];
-}
-
 export async function createInvite(
   inviterId: string,
   invitedEmail?: string | null,

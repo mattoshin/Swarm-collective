@@ -21,7 +21,7 @@ export default async function CollaboratePage() {
 
   return (
     <>
-      <AppNav member={member} />
+      <AppNav />
       <main className="mx-auto w-full max-w-4xl flex-1 px-5 py-10 sm:px-8">
         <PageHeader
           command="vim ./collaborate"
