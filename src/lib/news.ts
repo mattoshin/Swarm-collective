@@ -1,5 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { normalizeHttpUrl } from "./links";
 import { getServiceClient } from "./supabase";
 
 export interface NewsItem {
@@ -63,7 +64,10 @@ export async function generateDailyDigest(): Promise<NewsItem[]> {
       category: item.category || "News",
       headline: item.headline,
       summary: item.summary,
-      source_url: item.source_url || "",
+      // The model can hallucinate or echo an unsafe scheme (javascript:, data:); only
+      // ever persist a validated http(s) URL, since this flows straight into an <a href>
+      // on the News page and in the daily email.
+      source_url: normalizeHttpUrl(item.source_url) ?? "",
     }));
 }
 
