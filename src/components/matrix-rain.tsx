@@ -9,7 +9,7 @@ const GLYPHS =
 // Rain stays full strength at the edges and only lightly dims where content sits,
 // so it reads as a strong presence rather than a faint backdrop.
 const MASK =
-  "radial-gradient(ellipse 80% 70% at 50% 40%, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.3) 50%, rgb(0 0 0 / 0.55) 100%)";
+  "radial-gradient(ellipse 80% 70% at 50% 40%, rgb(0 0 0 / 0.06) 0%, rgb(0 0 0 / 0.22) 50%, rgb(0 0 0 / 0.4) 100%)";
 
 type MatrixRainProps = {
   color?: string;
@@ -24,7 +24,7 @@ export function MatrixRain({
   fadeColor = "#030703",
   fontSize = 16,
   fps = 22,
-  opacity = 0.85,
+  opacity = 1,
 }: MatrixRainProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -60,7 +60,7 @@ export function MatrixRain({
       // Translucent wash each frame turns old glyphs into fading trails.
       // A lighter wash (vs. the original 0.14) leaves more of the trail
       // visible per frame, for a denser, more prominent rain.
-      ctx.fillStyle = `rgba(${fade.r},${fade.g},${fade.b},0.1)`;
+      ctx.fillStyle = `rgba(${fade.r},${fade.g},${fade.b},0.08)`;
       ctx.fillRect(0, 0, width, height);
       ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textBaseline = "top";
@@ -70,9 +70,9 @@ export function MatrixRain({
         const y = drops[i] * fontSize;
         if (y > -fontSize) {
           const char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-          const isHead = Math.random() > 0.9;
-          const alpha = isHead ? opacity * 1.8 : opacity * (0.5 + Math.random() * 0.5);
-          ctx.shadowBlur = isHead ? 6 : 0;
+          const isHead = Math.random() > 0.85;
+          const alpha = isHead ? opacity * 1.8 : opacity * (0.65 + Math.random() * 0.35);
+          ctx.shadowBlur = isHead ? 8 : 0;
           ctx.fillStyle = `rgba(${glyph.r},${glyph.g},${glyph.b},${Math.min(alpha, 1)})`;
           ctx.fillText(char, i * fontSize, y);
         }
