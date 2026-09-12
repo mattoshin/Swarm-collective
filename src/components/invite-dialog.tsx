@@ -11,8 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createInviteAction, type CreateInviteState } from "@/app/directory/actions";
-import type { Invite } from "@/lib/members";
-import { cn } from "@/lib/utils";
 import { WindowBar } from "./terminal";
 
 function inviteUrl(code: string): string {
@@ -20,13 +18,11 @@ function inviteUrl(code: string): string {
   return `${window.location.origin}/join?code=${code}`;
 }
 
-export function InviteDialog({ invites }: { invites: Invite[] }) {
+export function InviteDialog() {
   const [state, action, pending] = useActionState<CreateInviteState, FormData>(
     createInviteAction,
     {},
   );
-
-  const activeCount = invites.filter((i) => new Date(i.expires_at) > new Date()).length;
 
   return (
     <Dialog>
@@ -60,17 +56,6 @@ export function InviteDialog({ invites }: { invites: Invite[] }) {
           ) : null}
 
           {state.code ? <FreshInvite code={state.code} /> : null}
-
-          {invites.length > 0 ? (
-            <div>
-              <p className="term-label">Your invites · {activeCount} active</p>
-              <ul className="max-h-56 divide-y divide-term-line overflow-y-auto border border-term-line">
-                {invites.map((invite) => (
-                  <InviteRow key={invite.id} invite={invite} />
-                ))}
-              </ul>
-            </div>
-          ) : null}
         </div>
       </DialogContent>
     </Dialog>
@@ -114,29 +99,5 @@ function FreshInvite({ code }: { code: string }) {
         </p>
       ) : null}
     </div>
-  );
-}
-
-function InviteRow({ invite }: { invite: Invite }) {
-  const url = inviteUrl(invite.code);
-  const expired = new Date(invite.expires_at) < new Date();
-  const joinedLabel =
-    invite.redemption_count === 0 ? "No one yet" : `${invite.redemption_count} joined`;
-
-  return (
-    <li className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
-      <span className="truncate text-term-muted">{url}</span>
-      <div className="flex shrink-0 items-center gap-2">
-        <span className="border border-term-line px-2 py-0.5 text-term-muted">{joinedLabel}</span>
-        <span
-          className={cn(
-            "border px-2 py-0.5",
-            expired ? "border-term-red/50 text-term-red" : "border-term-green/50 text-term-green",
-          )}
-        >
-          {expired ? "Expired" : "Active"}
-        </span>
-      </div>
-    </li>
   );
 }

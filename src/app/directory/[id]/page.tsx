@@ -4,7 +4,6 @@ import { AppNav } from "@/components/app-nav";
 import { PageHeader } from "@/components/terminal";
 import { getMemberById } from "@/lib/members";
 import { getCurrentMember } from "@/lib/session";
-import { ProfileEditForm } from "./profile-edit-form";
 import { saveAdminNoteAction } from "./actions";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -38,19 +37,26 @@ export default async function MemberProfilePage({
 
   return (
     <>
-      <AppNav member={actor} />
+      <AppNav />
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10 sm:px-8">
         <Link href="/directory" className="term-link text-xs">
           ← Directory
         </Link>
         <div className="mt-4">
-          <PageHeader
-            command={`cat ./directory/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
-            title={member.name}
-            meta={[member.career_title, member.company ? `at ${member.company}` : null]
-              .filter(Boolean)
-              .join(" ") || "Member"}
-          />
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <PageHeader
+              command={`cat ./directory/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
+              title={member.name}
+              meta={[member.career_title, member.company ? `at ${member.company}` : null]
+                .filter(Boolean)
+                .join(" ") || "Member"}
+            />
+            {isSelf ? (
+              <Link href={`/directory/${member.id}/edit`} className="term-btn-ghost h-9 px-4">
+                Edit profile
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <div className="term-panel mt-8 p-6 sm:p-8">
@@ -103,15 +109,6 @@ export default async function MemberProfilePage({
             </div>
           ) : null}
         </div>
-
-        {isSelf ? (
-          <div className="mt-8">
-            <PageHeader command="vim ./profile" title="Edit your info" />
-            <div className="mt-4">
-              <ProfileEditForm member={member} />
-            </div>
-          </div>
-        ) : null}
 
         {isAdmin ? (
           <div className="mt-8">
