@@ -11,7 +11,7 @@ export async function AppNav({ member }: { member: Member }) {
     <header className="sticky top-0 z-30 border-b border-term-line bg-term-bg/85 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3 sm:px-8">
         <Wordmark className="text-4xl" />
-        <NavTabs isAdmin={member.role === "admin"} />
+        <NavTabs />
         <div className="ml-auto flex items-center gap-2">
           <InviteDialog invites={invites} />
           <form action={signOutAction}>
