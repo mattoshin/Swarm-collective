@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthShell } from "@/components/terminal";
 import { getInviteByCode, getMemberById } from "@/lib/members";
 import { getCurrentMember } from "@/lib/session";
 import { JoinForm } from "./join-form";
@@ -15,11 +16,12 @@ export default async function JoinPage({
   const { code } = await searchParams;
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 py-24">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.02] p-8 text-center">
-        {await renderBody(code)}
-      </div>
-    </main>
+    <AuthShell
+      windowTitle={code ? "swarm@network:~$ join --invite" : "swarm@network:~$ join"}
+      wide={Boolean(code)}
+    >
+      {await renderBody(code)}
+    </AuthShell>
   );
 }
 
@@ -27,42 +29,42 @@ async function renderBody(code: string | undefined) {
   if (!code) {
     return (
       <>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="font-heading text-5xl leading-none text-term-text">
           Join Swarm Collective
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-white/50">
-          The swarm is invite-only. If a member sent you an invite link, open it
-          to join — or paste your invite code below.
+        <p className="mt-3 text-sm leading-relaxed text-term-muted">
+          The swarm is invite-only. If a member sent you an invite link, open it to join — or
+          paste your invite code below.
         </p>
 
         <form method="get" action="/join" className="mt-6 flex items-center gap-2">
+          <label htmlFor="code" className="sr-only">
+            Invite code
+          </label>
           <input
+            id="code"
             name="code"
             required
             placeholder="Paste invite code"
-            className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-indigo-400/60 focus:bg-white/[0.05]"
+            className="term-input"
           />
-          <button
-            type="submit"
-            className="shrink-0 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-white/90"
-          >
+          <button type="submit" className="term-btn shrink-0">
             Continue
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-white/40">
-          Already a member?{" "}
-          <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
-            Sign in
+        <div className="mt-6 space-y-3 border-t border-term-line pt-4 text-xs text-term-muted">
+          <p>
+            Already a member?{" "}
+            <Link className="term-link" href="/enter">
+              Sign in
+            </Link>
+            .
+          </p>
+          <Link href="/" className="term-link">
+            ← Back home
           </Link>
-          .
-        </p>
-        <Link
-          href="/"
-          className="mt-4 inline-block text-sm text-white/40 transition hover:text-white/70"
-        >
-          ← Back home
-        </Link>
+        </div>
       </>
     );
   }
@@ -71,54 +73,47 @@ async function renderBody(code: string | undefined) {
   const isShared = Boolean(shared && code === shared);
   const invite = isShared ? null : await getInviteByCode(code);
   if (!isShared && !invite) {
-    return <Notice title="Invite not found">
-      This invite link isn&apos;t valid. Double-check it with whoever sent it.
-    </Notice>;
+    return (
+      <Notice title="Invite not found">
+        This invite link isn&apos;t valid. Double-check it with whoever sent it.
+      </Notice>
+    );
   }
   if (invite && new Date(invite.expires_at) < new Date()) {
-    return <Notice title="Invite expired">
-      This invite link has expired. Ask whoever sent it for a new one, or{" "}
-      <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
-        sign in
-      </Link>{" "}
-      if you already joined.
-    </Notice>;
+    return (
+      <Notice title="Invite expired">
+        This invite link has expired. Ask whoever sent it for a new one, or{" "}
+        <Link className="term-link" href="/enter">
+          sign in
+        </Link>{" "}
+        if you already joined.
+      </Notice>
+    );
   }
 
   const inviter = invite ? await getMemberById(invite.inviter_id) : null;
 
   return (
     <>
-      <p className="text-xs font-medium uppercase tracking-[0.3em] text-indigo-300/70">
-        You&apos;re invited
-      </p>
-      <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+      <p className="text-xs uppercase tracking-[.2em] text-term-green">You&apos;re invited</p>
+      <h1 className="mt-3 font-heading text-5xl leading-none text-term-text">
         Join Swarm Collective
       </h1>
-      <p className="mt-2 text-sm text-white/50">
-        {inviter ? `${inviter.name} invited you in.` : "Your invite is valid."}{" "}
-        Add your details to unlock the directory.
+      <p className="mt-3 text-sm text-term-muted">
+        {inviter ? `${inviter.name} invited you in.` : "Your invite is valid."} Add your details
+        to unlock the directory.
       </p>
       <JoinForm code={code} />
     </>
   );
 }
 
-function Notice({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight text-white">{title}</h1>
-      <p className="mt-3 text-sm leading-relaxed text-white/50">{children}</p>
-      <Link
-        href="/"
-        className="mt-6 inline-block text-sm text-white/40 transition hover:text-white/70"
-      >
+      <h1 className="font-heading text-5xl leading-none text-term-text">{title}</h1>
+      <p className="mt-3 text-sm leading-relaxed text-term-muted">{children}</p>
+      <Link href="/" className="term-link mt-6 inline-block text-xs">
         ← Back home
       </Link>
     </>

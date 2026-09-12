@@ -3,9 +3,8 @@
 import { useActionState } from "react";
 import { submitJoin, type JoinState } from "./actions";
 
-const fieldClass =
-  "w-full rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-indigo-400/60 focus:bg-white/[0.05]";
-const labelClass = "mb-1.5 block text-xs font-medium text-white/60";
+const fieldClass = "term-input";
+const labelClass = "term-label";
 
 export function JoinForm({ code }: { code: string }) {
   const [state, action, pending] = useActionState<JoinState, FormData>(
@@ -13,10 +12,15 @@ export function JoinForm({ code }: { code: string }) {
     {},
   );
 
-  if (state.success) return <div className="mt-8 rounded-xl border-2 border-black bg-[#fff3a3] p-5 text-sm font-bold leading-relaxed text-black">{state.success}</div>;
+  if (state.success)
+    return (
+      <div role="status" className="term-success mt-8">
+        {state.success}
+      </div>
+    );
 
   return (
-    <form action={action} className="mt-8 space-y-4 text-left">
+    <form action={action} className="mt-8 space-y-4">
       <input type="hidden" name="code" value={code} />
 
       <div>
@@ -78,16 +82,12 @@ export function JoinForm({ code }: { code: string }) {
       </div>
 
       {state.error ? (
-        <p className="rounded-lg border border-red-400/20 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-200">
+        <p role="alert" className="term-error">
           {state.error}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="inline-flex h-11 w-full items-center justify-center rounded-full bg-white text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className="term-btn w-full">
         {pending ? "Joining…" : "Join the swarm"}
       </button>
     </form>
