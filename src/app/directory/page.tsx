@@ -32,6 +32,9 @@ export default async function DirectoryPage() {
                 <Th>Phone</Th>
                 <Th>Location</Th>
                 <Th>Invited by</Th>
+                <th className="px-4 py-3 font-medium">
+                  <span className="sr-only">Profile</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +78,14 @@ export default async function DirectoryPage() {
                     </Td>
                     <Td>{row.location ?? "—"}</Td>
                     <Td>{row.invited_by_name ?? "—"}</Td>
+                    <Td>
+                      <Link
+                        href={`/directory/${row.id}`}
+                        className="term-btn-ghost inline-flex h-7 shrink-0 whitespace-nowrap px-2.5 text-[10px]"
+                      >
+                        View profile
+                      </Link>
+                    </Td>
                   </tr>
                 );
               })}

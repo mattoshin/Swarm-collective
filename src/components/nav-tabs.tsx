@@ -9,6 +9,7 @@ const APPS = [
   { href: "/meetings", label: "Meetings" },
   { href: "/charter", label: "The Charter" },
   { href: "/tools", label: "Tools" },
+  { href: "/collaborate", label: "Collaborate" },
 ];
 
 export function NavTabs() {
