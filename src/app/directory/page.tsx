@@ -1,55 +1,29 @@
 import { redirect } from "next/navigation";
-import { listDirectory, listInvitesFor } from "@/lib/members";
+import { AppNav } from "@/components/app-nav";
+import { PageHeader } from "@/components/terminal";
+import { listDirectory } from "@/lib/members";
 import { getCurrentMember } from "@/lib/session";
-import { signOutAction } from "./actions";
-import { InvitePanel } from "./invite-panel";
-import Link from "next/link";
 
 export default async function DirectoryPage() {
   const member = await getCurrentMember();
   if (!member) redirect("/enter");
 
-  const [rows, invites] = await Promise.all([
-    listDirectory(),
-    listInvitesFor(member.id),
-  ]);
+  const rows = await listDirectory();
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-14">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-[0.3em] text-indigo-300/70">
-            The swarm
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-            Directory
-          </h1>
-          <p className="mt-1 text-sm text-white/50">
-            {rows.length} {rows.length === 1 ? "member" : "members"} · signed in
-            as {member.name}
-          </p>
-        </div>
-        <form action={signOutAction}>
-          <Link href="/meetings" className="mr-3 h-9 rounded-full border border-amber-300/30 px-4 py-2 text-sm text-amber-200">Meetings</Link>
-          {member.role === "admin" ? <Link href="/admin" className="mr-3 h-9 rounded-full border border-white/15 px-4 py-2 text-sm text-white/70">CRM</Link> : null}
-          <button
-            type="submit"
-            className="h-9 rounded-full border border-white/15 px-4 text-sm text-white/70 transition hover:border-white/30 hover:text-white"
-          >
-            Sign out
-          </button>
-        </form>
-      </div>
+    <>
+      <AppNav member={member} />
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-8">
+        <PageHeader
+          command="ls ./members"
+          title="Directory"
+          meta={`${rows.length} ${rows.length === 1 ? "member" : "members"} · signed in as ${member.name}`}
+        />
 
-      <div className="mt-8">
-        <InvitePanel invites={invites} />
-      </div>
-
-      <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+        <div className="term-panel mt-8 overflow-x-auto">
+          <table className="w-full min-w-[760px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-white/40">
+              <tr className="border-b border-term-line text-[11px] uppercase tracking-[.1em] text-term-muted">
                 <Th>Name</Th>
                 <Th>Career title</Th>
                 <Th>Interests</Th>
@@ -65,14 +39,14 @@ export default async function DirectoryPage() {
                 return (
                   <tr
                     key={row.id}
-                    className={`border-b border-white/5 last:border-0 ${
-                      isSelf ? "bg-indigo-500/[0.06]" : ""
+                    className={`border-b border-term-line/50 transition-colors last:border-0 hover:bg-term-green/[0.04] ${
+                      isSelf ? "bg-term-green/[0.06]" : ""
                     }`}
                   >
                     <Td>
-                      <span className="font-medium text-white">{row.name}</span>
+                      <span className="whitespace-nowrap font-bold text-term-text">{row.name}</span>
                       {isSelf ? (
-                        <span className="ml-2 rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs text-indigo-200">
+                        <span className="ml-2 border border-term-green px-1.5 py-0.5 text-[10px] uppercase tracking-[.1em] text-term-green">
                           You
                         </span>
                       ) : null}
@@ -80,14 +54,19 @@ export default async function DirectoryPage() {
                     <Td>{row.career_title ?? "—"}</Td>
                     <Td>{row.interests ?? "—"}</Td>
                     <Td>
-                      <a
-                        href={`mailto:${row.email}`}
-                        className="text-indigo-300 transition hover:text-indigo-200"
-                      >
+                      <a href={`mailto:${row.email}`} className="text-term-green hover:underline">
                         {row.email}
                       </a>
                     </Td>
-                    <Td>{row.phone ? <a href={`tel:${row.phone}`} className="text-amber-200">{row.phone}</a> : "—"}</Td>
+                    <Td>
+                      {row.phone ? (
+                        <a href={`tel:${row.phone}`} className="hover:text-term-green">
+                          {row.phone}
+                        </a>
+                      ) : (
+                        "—"
+                      )}
+                    </Td>
                     <Td>{row.location ?? "—"}</Td>
                     <Td>{row.invited_by_name ?? "—"}</Td>
                   </tr>
@@ -96,8 +75,8 @@ export default async function DirectoryPage() {
             </tbody>
           </table>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
 
@@ -106,5 +85,5 @@ function Th({ children }: { children: React.ReactNode }) {
 }
 
 function Td({ children }: { children: React.ReactNode }) {
-  return <td className="px-4 py-3 align-middle text-white/70">{children}</td>;
+  return <td className="px-4 py-3 align-middle text-term-muted">{children}</td>;
 }

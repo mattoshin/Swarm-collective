@@ -1,4 +1,42 @@
 import { redirect } from "next/navigation";
+import { AuthShell } from "@/components/terminal";
 import { getCurrentMember } from "@/lib/session";
 import { dismissBookmark } from "./actions";
-export default async function Welcome(){const member=await getCurrentMember();if(!member)redirect("/enter");if(member.bookmark_prompt_seen)redirect("/directory");return <main className="flex flex-1 items-center justify-center px-6 py-20"><section className="w-full max-w-lg rounded-3xl border border-amber-300/30 bg-amber-300/[.06] p-8 text-center shadow-2xl"><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-amber-300 text-2xl text-black">⌘</div><p className="mt-6 text-xs font-medium uppercase tracking-[.3em] text-amber-200/70">One small thing</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-white">Keep Swarm within reach.</h1><p className="mt-4 leading-relaxed text-white/55">Save this private community home so it doesn’t disappear into the group chat.</p><div className="mt-7 grid gap-2 text-left text-sm text-white/65"><p className="rounded-xl border border-white/10 p-3"><strong className="text-white">Mac:</strong> press ⌘ D</p><p className="rounded-xl border border-white/10 p-3"><strong className="text-white">Windows:</strong> press Ctrl D</p><p className="rounded-xl border border-white/10 p-3"><strong className="text-white">Mobile:</strong> Share → Add to Home Screen</p></div><form action={dismissBookmark} className="mt-7"><button className="h-11 w-full rounded-full bg-amber-300 font-semibold text-black">I saved it</button><button className="mt-4 text-sm text-white/40">Skip for now</button></form></section></main>}
+
+const SHORTCUTS = [
+  ["Mac", "press ⌘ D"],
+  ["Windows", "press Ctrl D"],
+  ["Mobile", "Share → Add to Home Screen"],
+] as const;
+
+export default async function Welcome() {
+  const member = await getCurrentMember();
+  if (!member) redirect("/enter");
+  if (member.bookmark_prompt_seen) redirect("/directory");
+
+  return (
+    <AuthShell windowTitle="swarm@network:~$ bookmark --add">
+      <p className="text-xs uppercase tracking-[.2em] text-term-green">One small thing</p>
+      <h1 className="mt-3 font-heading text-5xl leading-none text-term-text">
+        Keep Swarm within reach.
+      </h1>
+      <p className="mt-4 text-sm leading-relaxed text-term-muted">
+        Save this private community home so it doesn’t disappear into the group chat.
+      </p>
+      <dl className="mt-6 grid gap-2 text-sm">
+        {SHORTCUTS.map(([device, keys]) => (
+          <div key={device} className="flex items-center justify-between gap-4 border border-term-line px-3 py-2.5">
+            <dt className="text-term-muted">{device}</dt>
+            <dd className="text-right text-term-green">{keys}</dd>
+          </div>
+        ))}
+      </dl>
+      <form action={dismissBookmark} className="mt-6">
+        <button className="term-btn w-full">I saved it</button>
+        <button className="mt-3 w-full text-xs text-term-muted transition-colors hover:text-term-green">
+          Skip for now
+        </button>
+      </form>
+    </AuthShell>
+  );
+}

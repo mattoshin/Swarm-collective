@@ -21,7 +21,7 @@ export async function createInviteAction(
 
   try {
     const invite = await createInvite(member.id);
-    revalidatePath("/directory");
+    revalidatePath("/", "layout");
     return { code: invite.code };
   } catch {
     return { error: "Couldn't create an invite. Please try again." };
