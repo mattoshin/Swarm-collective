@@ -224,3 +224,66 @@ export async function acceptInvite(params: {
 
   return { ok: true, memberId };
 }
+
+export interface UpdateProfileResult {
+  ok: boolean;
+  error?: string;
+}
+
+/** Fields a member may edit on their own profile. Email, role, and admin_notes are out of scope here. */
+export async function updateOwnProfile(
+  memberId: string,
+  params: {
+    name: string;
+    interests?: string | null;
+    careerTitle?: string | null;
+    phone?: string | null;
+    company?: string | null;
+    college?: string | null;
+    location?: string | null;
+    bio?: string | null;
+    linkedinUrl?: string | null;
+    websiteUrl?: string | null;
+    instagramUrl?: string | null;
+    publicNotes?: string | null;
+  },
+): Promise<UpdateProfileResult> {
+  const name = params.name.trim();
+  if (!name) return { ok: false, error: "Name can't be empty." };
+
+  const links = {
+    linkedin_url: normalizeHttpUrl(params.linkedinUrl),
+    website_url: normalizeHttpUrl(params.websiteUrl),
+    instagram_url: normalizeInstagram(params.instagramUrl),
+  };
+  const badLink =
+    (params.linkedinUrl?.trim() && !links.linkedin_url) ||
+    (params.websiteUrl?.trim() && !links.website_url) ||
+    (params.instagramUrl?.trim() && !links.instagram_url);
+  if (badLink) {
+    return { ok: false, error: "One of your links doesn't look right. Use a full link, or an @handle for Instagram." };
+  }
+
+  const supabase = getServiceClient();
+  const { error } = await supabase
+    .from("swarm_members")
+    .update({
+      name,
+      full_name: name,
+      interests: params.interests?.trim() || null,
+      career_title: params.careerTitle?.trim() || null,
+      role_title: params.careerTitle?.trim() || null,
+      phone: params.phone?.trim() || null,
+      company: params.company?.trim() || null,
+      college: params.college?.trim() || null,
+      location: params.location?.trim() || null,
+      bio: params.bio?.trim() || null,
+      ...links,
+      public_notes: params.publicNotes?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", memberId);
+
+  if (error) return { ok: false, error: "Couldn't save your changes. Please try again." };
+  return { ok: true };
+}

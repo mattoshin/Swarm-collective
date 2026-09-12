@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppNav } from "@/components/app-nav";
 import { PageHeader } from "@/components/terminal";
@@ -44,7 +45,12 @@ export default async function DirectoryPage() {
                     }`}
                   >
                     <Td>
-                      <span className="whitespace-nowrap font-bold text-term-text">{row.name}</span>
+                      <Link
+                        href={`/directory/${row.id}`}
+                        className="whitespace-nowrap font-bold text-term-text hover:text-term-green hover:underline"
+                      >
+                        {row.name}
+                      </Link>
                       {isSelf ? (
                         <span className="ml-2 border border-term-green px-1.5 py-0.5 text-[10px] uppercase tracking-[.1em] text-term-green">
                           You
