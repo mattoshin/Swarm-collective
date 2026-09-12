@@ -10,7 +10,20 @@ source_kind: put_page
 
 # Swarm Collective Handoff
 
-Updated: September 10, 2026
+Updated: September 12, 2026
+
+## Resolved (2026-09-11)
+
+Both pending PRs merged to `main`:
+
+- PR #2 `feat/crm-member-fields` — Instagram field + full member profile in
+  the CRM. Migration `20260911_member_instagram.sql` confirmed live on
+  Element's Supabase project (`ouundztbpxnwzacmxowa`).
+- PR #3 `feat/reusable-invite-links` — personal invite links are now
+  reusable for 6 months (`expires_at` / `redemption_count`). Migration
+  `20260911_invite_reuse_expiry.sql` applied.
+
+No open blockers.
 
 ## Product
 
@@ -26,7 +39,7 @@ The repository is intended to be open source. Never commit member records, live 
 - `www` domain: `https://www.swarmcollective.world`
 - Database: Supabase
 - Transactional email: Resend from the verified Swarm domain
-- Latest verified release: `c8d68f6`
+- Latest verified release: `095f11e`
 
 ## Member experience
 
@@ -82,6 +95,7 @@ Anyone who joins through either valid invitation path must verify control of the
 - Biography
 - LinkedIn URL
 - Personal website URL
+- Instagram
 - Additional public information
 - Private administrator notes
 
@@ -112,6 +126,14 @@ Run secret-dependent Vercel commands through the 1Password wrapper:
 ~/.local/bin/with-automation-secrets vercel ls swarm-collective --yes
 ```
 
-## Next product step
+## Next product step (candidates, not yet chosen)
 
-Improve the meeting scheduler so an administrator can choose recipients, send polished invitation and reminder emails, and see RSVP totals. Preserve the existing rule that ordinary members can RSVP but cannot broadcast email to the membership.
+- Members have no page to edit their own profile after joining. Matthew has
+  flagged this gap ("make editing your info and profile better").
+- Design refresh: Matthew wants the site to feel high-tech, not gimmicky, and
+  dislikes the current yellow editorial look (`9991a46`). Any UI work here
+  must go through Refero research first per the standing design rule.
+- Improve the meeting scheduler so an administrator can choose recipients,
+  send polished invitation and reminder emails, and see RSVP totals. Preserve
+  the existing rule that ordinary members can RSVP but cannot broadcast email
+  to the membership.
