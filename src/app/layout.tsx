@@ -15,6 +15,7 @@ const display = VT323({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://swarmcollective.world"),
   title: "Swarm Collective",
   description:
     "An invite-only network. Get introduced, join the directory, bring others in.",
