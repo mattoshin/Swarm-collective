@@ -75,13 +75,13 @@ async function renderBody(code: string | undefined) {
       This invite link isn&apos;t valid. Double-check it with whoever sent it.
     </Notice>;
   }
-  if (invite?.accepted_by) {
-    return <Notice title="Invite already used">
-      This invite has already been redeemed. If that was you,{" "}
+  if (invite && new Date(invite.expires_at) < new Date()) {
+    return <Notice title="Invite expired">
+      This invite link has expired. Ask whoever sent it for a new one, or{" "}
       <Link className="text-indigo-300 hover:text-indigo-200" href="/enter">
         sign in
       </Link>{" "}
-      instead.
+      if you already joined.
     </Notice>;
   }
 
